@@ -1,5 +1,4 @@
 import uvicorn
-from starlette import status
 
 from auth.auth_bearer import JWTBearer
 from utils.service import get_user_by_token, get_item_by_id
@@ -10,18 +9,15 @@ import models as models
 import schemas as schemas
 from repositories import ItemRepo, UserRepo, CartRepo
 from sqlalchemy.orm import Session
-from typing import List, Optional
+from typing import List
 
-from fastapi import FastAPI, Depends, Request
+from fastapi import FastAPI, Depends
 
 from fastapi import HTTPException
-from fastapi.templating import Jinja2Templates
 
 app = FastAPI()
 
 models.Base.metadata.create_all(bind=engine)
-
-templates = Jinja2Templates(directory="templates")
 
 
 # testing
