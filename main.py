@@ -28,6 +28,9 @@ def greet():
 
 @app.get('/items', tags=["Item"], response_model=List[schemas.Item])
 def get_all_items(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+    """
+    Get all Items in database
+    """
     all_items = ItemRepo.fetch_all(db, skip=skip, limit=limit)
     return all_items
 
@@ -46,7 +49,7 @@ def get_item(item_id: int, db: Session = Depends(get_db)):
 @app.post("/items", tags=["items"], response_model=schemas.Item, status_code=201)
 async def add_item(item_request: schemas.ItemCreate, token: str = Depends(JWTBearer()), db: Session = Depends(get_db)):
     """
-    Create an Item and store it in the database
+    Create an Item in the database
     """
     get_user = get_user_by_token(token, db)
     if get_user.role != "seller":
@@ -57,6 +60,9 @@ async def add_item(item_request: schemas.ItemCreate, token: str = Depends(JWTBea
 @app.post("/cart")
 async def add_item_to_cart(add_to_cart: schemas.AddToCart, token: str = Depends(JWTBearer()),
                            db: Session = Depends(get_db)):
+    """
+    Add an Item to a cart
+    """
     get_user = get_user_by_token(token, db)
     selected_item = get_item_by_id(add_to_cart.product_id, db)
 
@@ -71,6 +77,9 @@ async def add_item_to_cart(add_to_cart: schemas.AddToCart, token: str = Depends(
 
 @app.post("/user/signup", response_model=schemas.User)
 async def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
+    """
+    Create an User in the database
+    """
     salt = get_random_string()
     user.password = f"{salt}${hash_password(user.password, salt)}"
     db_user = UserRepo.fetch_by_email(db, email=user.email)
@@ -81,12 +90,18 @@ async def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
 
 @app.get("/users/", response_model=List[schemas.User])
 def read_users(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+    """
+    Get all Users in database
+    """
     users = UserRepo.fetch_all(db, skip=skip, limit=limit)
     return users
 
 
 @app.get("/users/{user_id}", response_model=schemas.User)
 def read_user_id(user_id: int, db: Session = Depends(get_db)):
+    """
+    Get the User with the given ID  in database
+    """
     db_user = UserRepo.fetch_by_id(db, user_id)
     if db_user is None:
         raise HTTPException(status_code=404, detail="User not found")
@@ -95,8 +110,11 @@ def read_user_id(user_id: int, db: Session = Depends(get_db)):
 
 @app.post("/user/login")
 def user_login(user_auth: schemas.UserLoginSchema, db: Session = Depends(get_db)):
-    db_user = UserRepo.fetch_by_email(db, user_auth.email)
+    """
+    Login
+    """
 
+    db_user = UserRepo.fetch_by_email(db, user_auth.email)
     if not db_user:
         raise HTTPException(status_code=400, detail="Incorrect email or password")
 
@@ -109,5 +127,8 @@ def user_login(user_auth: schemas.UserLoginSchema, db: Session = Depends(get_db)
 
 @app.get("/user/me")
 async def read_users_me(token: str = Depends(JWTBearer()), db: Session = Depends(get_db)):
+    """
+    Get the current User
+    """
     get_user = get_user_by_token(token, db)
     return get_user
