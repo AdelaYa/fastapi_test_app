@@ -1,5 +1,5 @@
-from sqlalchemy import Boolean, Column, Integer, String
-from database import Base
+from sqlalchemy import Column, Integer, String
+from db import Base
 
 
 class User(Base):
@@ -9,8 +9,10 @@ class User(Base):
     email = Column(String)
     firstname = Column(String)
     password = Column(String)
-    type = Column(String, index=True)
+    role = Column(String, index=True)
 
+    def __repr__(self):
+        return 'User(email=%s, firstname=%s, password=%s, role=%s)' % (self.email, self.firstname, self.password, self.role)
 
 
 class Item(Base):
@@ -19,3 +21,15 @@ class Item(Base):
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, index=True)
     quantity = Column(Integer, index=True)
+
+    def __repr__(self):
+        return 'ItemModel(name=%s, quantity=%s)' % (self.name, self.quantity)
+
+class Cart(Base):
+    __tablename__ = "carts"
+
+    product_id = Column(Integer, primary_key=True, index=True)
+    quantity = Column(Integer, index=True)
+
+    def __repr__(self):
+        return 'CartModel(id=%s, quantity=%s)' % (self.id, self.quantity)

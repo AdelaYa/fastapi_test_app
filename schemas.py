@@ -1,9 +1,4 @@
-import jwt
-from pydantic import BaseModel, Field, EmailStr
-from fastapi import Depends
-
-from auth.auth_bearer import JWTBearer
-from auth.auth_handler import  JWT_SECRET, JWT_ALGORITHM
+from pydantic import BaseModel
 
 
 class ItemBase(BaseModel):
@@ -30,11 +25,15 @@ class Item(ItemBase):
         orm_mode = True
 
 
+class AddToCart(BaseModel):
+    product_id: int
+    quantity: int
+
+
 class UserBase(BaseModel):
     firstname: str
-    email: EmailStr
-    password: str
-    type: str
+    email: str
+    role: str
 
 
     class Config:
@@ -43,39 +42,34 @@ class UserBase(BaseModel):
                 "firstname": "Ivan",
                 "email": "ivanov@x.com",
                 "password": "weakpassword",
-                "type": "buyer"
+                "role": "buyer"
             }
         }
 
 
 class UserCreate(UserBase):
-    pass
+    password: str
 
 
 class User(UserBase):
     id: int
 
-
     class Config:
         orm_mode = True
 
 
-# async def get_current_user(token: str = Depends(JWTBearer())):
-#     payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM], verify_signature=False)
-#     return {
-#         "email": payload.get("email")
-#     }
-#
 
-#
-# class UserLoginSchema(BaseModel):
-#     email: EmailStr = Field(...)
-#     password: str = Field(...)
-#
-#     class Config:
-#         schema_extra = {
-#             "example": {
-#                 "email": "ivanov@x.com",
-#                 "password": "weakpassword"
-#             }
-#         }
+class UserLoginSchema(BaseModel):
+    email: str
+    password: str
+
+    class Config:
+        schema_extra = {
+            "example": {
+                "email": "ivanov@x.com",
+                "password": "weakpassword"
+            }
+        }
+
+
+

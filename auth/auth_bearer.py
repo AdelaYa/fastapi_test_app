@@ -1,4 +1,3 @@
-#The goal of this file is to check whether the request is authorized or not [ verification of the proteced route]
 from fastapi import Request, HTTPException
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 
